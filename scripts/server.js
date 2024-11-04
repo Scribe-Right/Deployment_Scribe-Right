@@ -25,7 +25,7 @@ app.get('/get-ml-output', (req, res) => {
 let lastMlOutput = '';
 
 // Configure upload directory
-const UPLOAD_FOLDER = 'D:/Analysis_ML/data/images';
+const UPLOAD_FOLDER = 'data/images';
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_FOLDER);

@@ -6,7 +6,7 @@
     "multer": "^1.4.5-lts.1"
   },
   "scripts" :{
-    "dev":"nodemon api/run-ml.js",
+    "dev":"nodemon scripts/run-ml.js",
     "vercel-build": "echo hello"
   }
   
