@@ -1,0 +1,7 @@
+numpy
+watchdog
+onnxruntime
+opencv-python
+scikit-learn
+editdistance
+autocorrectpath

@@ -60,6 +60,7 @@ app.post('/api/run-ml', upload.single('file'), async (req, res) => {
     
     // Create a promise to handle the Python process
     const processML = new Promise((resolve, reject) => {
+      // Use 'python3' as executable to match Docker image setup
       const pythonProcess = spawn('python3', [pythonScriptPath, uploadedFilePath]);
       
       let scriptOutput = '';
@@ -120,13 +121,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
+// Only start the server if this file is executed directly (not required for Docker)
+if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 }
 
-// Export the Express API
+// Export the Express API for testing or external use
 module.exports = app;
