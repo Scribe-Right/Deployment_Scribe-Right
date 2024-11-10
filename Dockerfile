@@ -1,20 +1,16 @@
-# Use the official Node.js image as a base
-FROM node:16-slim
+# Use the official Python 3.10 image as a base
+FROM python:3.10-slim
 
-# Update and install prerequisites
+# Update and install Node.js and other prerequisites
 RUN apt-get update && \
-    apt-get install -y software-properties-common curl gnupg2 && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
-# Add the deadsnakes PPA to get Python 3.10
-RUN add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y python3.10 python3-pip --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set Python 3.10 as the default
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
-    update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+# Install Node.js (version 16 in this example)
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -32,7 +28,7 @@ RUN npm install
 COPY . .
 
 # Install Python dependencies from requirements.txt
-RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variable for the app port
 ENV PORT=3000
