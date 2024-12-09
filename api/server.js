@@ -27,7 +27,7 @@ const upload = multer({ storage });
 fs.mkdirSync(UPLOAD_FOLDER, { recursive: true });
 
 // Path to Python script
-const pythonScriptPath = 'analyse_for_server.py';
+const pythonScriptPath = '../scripts/analyse_for_server.py';
 
 // Health check route
 app.get('/', (req, res) => {
