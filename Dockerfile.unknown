@@ -1,0 +1,17 @@
+# Stage 1: Build Stage
+FROM python:3.10-slim as builder
+RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
+WORKDIR /app
+COPY package.json package-lock.json requirements.txt ./
+RUN npm install && pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Runtime Stage
+FROM python:3.10-slim
+WORKDIR /app
+COPY --from=builder /app /app
+ENV PORT=3000
+EXPOSE $PORT
+HEALTHCHECK CMD curl --fail http://localhost:$PORT || exit 1
+CMD ["node", "api/server.js"]
+

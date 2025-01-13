@@ -1,4 +1,8 @@
 import time
+import absl.logging
+absl.logging.set_verbosity(absl.logging.ERROR)  # Suppress unnecessary logs
+absl.logging.set_stderrthreshold('fatal')
+import grpc
 import os
 import cv2
 import htr_pipeline
@@ -10,7 +14,7 @@ import pandas as pd
 from datetime import datetime
 
 # Assuming genai is the correct library
-genai.configure(api_key="AIzaSyBPhRoY7S2I35q460jQTcbLVYcxccPB2Go")
+genai.configure(api_key="AIzaSyBt0ZbpPxwS80U1CIXFddoYn2NEJrD4J8k")
 # Initialize the Gemini model
 model = genai.GenerativeModel('gemini-1.5-flash')
 

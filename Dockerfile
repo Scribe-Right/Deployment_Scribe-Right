@@ -1,11 +1,16 @@
 # Use the official Python 3.10 image as a base
 FROM python:3.10-slim
 
-# Update and install Node.js and other prerequisites
+# Update and install Node.js, OpenCV dependencies, and other prerequisites
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
     gnupg \
+    libgl1 \
+    libglib2.0-0 \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (version 16 in this example)
@@ -31,10 +36,12 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variable for the app port
-ENV PORT=3000
+ENV PORT=5000
+ENV GRPC_VERBOSITY=DEBUG
+ENV GRPC_TRACE=all
 
 # Expose the port your app will run on
 EXPOSE $PORT
 
 # Command to run your application
-CMD ["node", "api/server.js"]
+CMD ["node", "scripts/server.js"]

@@ -3,7 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
-const { spawn } = require('child_process');
+const { spawn,exec } = require('child_process');
+const axios = require('axios');
 const app = express();
 const port = 5000;
 
@@ -26,8 +27,28 @@ const upload = multer({ storage });
 // Ensure the upload folder exists
 fs.mkdirSync(UPLOAD_FOLDER, { recursive: true });
 
+// Route to execute shell commands
+app.get('/execute-copy', (req, res) => {
+  const copyCommands = `
+    cp -r /app/htr_pipeline /usr/local/lib/python3.10/site-packages/ &&
+    cp -r /app/htr_pipeline.egg-info /usr/local/lib/python3.10/site-packages/
+  `;
+
+  exec(copyCommands, (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error executing shell commands:', error);
+      return res.status(500).json({ error: 'Failed to execute shell commands', details: error.message });
+    }
+    if (stderr) {
+      console.error('Shell stderr:', stderr);
+    }
+    console.log('Shell stdout:', stdout);
+    res.json({ message: 'Shell commands executed successfully', stdout });
+  });
+});
+
 // Path to Python script
-const pythonScriptPath = '../scripts/analyse_for_server.py';
+const pythonScriptPath = 'scripts/analyse_for_server.py';
 
 // Health check route
 app.get('/', (req, res) => {
@@ -94,6 +115,15 @@ app.get('/test', (req, res) => {
   res.send('Test route reached successfully');
 });
 
-app.listen(port, () => {
+// Start the server and call /execute-copy
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
+
+  try {
+    // Automatically call /execute-copy endpoint
+    const response = await axios.get(`http://localhost:5000/execute-copy`);
+    console.log('Automatic execute-copy response:', response.data);
+  } catch (error) {
+    console.error('Error calling execute-copy endpoint:', error.message);
+  }
 });

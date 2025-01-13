@@ -1,24 +1,29 @@
 import time
 import os
 import cv2
-import htr_pipeline
+import sys
 from htr_pipeline import read_page, DetectorConfig, LineClusteringConfig
 import google.generativeai as genai
 import pandas as pd
 from datetime import datetime
 import argparse
 import json
+# Import the concurrent.futures module (for genAI)
+import concurrent.futures
+
+# Timeout for Gemini API call (in seconds)
+GENAI_TIMEOUT = 30
 
 # Initialize the Gemini model
-genai.configure(api_key="AIzaSyBPhRoY7S2I35q460jQTcbLVYcxccPB2Go")
-model = genai.GenerativeModel('gemini-1.5-flash')
+genai.configure(api_key="AIzaSyBt0ZbpPxwS80U1CIXFddoYn2NEJrD4J8k")
+model = genai.GenerativeModel('gemini-1.5-pro')
 
 # Dictionaries to store letter counts
 incorrect_letter_counts = {}
 total_letter_counts = {}
 
 # Initialize Excel file path
-excel_file = '../output/letter_incorrect_percentage.xlsx'
+excel_file = '/app/output/letter_incorrect_percentage.xlsx'
 
 def compare_and_track_incorrect_letters(extracted_sentence, corrected_sentence):
     global total_letter_counts, incorrect_letter_counts
@@ -114,7 +119,7 @@ def process_image(image_path):
 
     # Save the recognized text to a .txt file
     filename = os.path.basename(image_path)
-    txt_file_path = os.path.join('..\output', filename + '.txt')
+    txt_file_path = os.path.join('/app/output', filename + '.txt')
     with open(txt_file_path, 'w') as f:
         for read_line in read_lines:
             line_text = ' '.join(read_word.text for read_word in read_line)

@@ -58,7 +58,6 @@ numpy
 onnxruntime
 openai
 opencv-python
-opencv-python-headless
 openpyxl
 packaging
 pandas
@@ -95,17 +94,7 @@ spellcheck
 spellchecker
 sympy
 textblob
-threadpoolctl
-tifffile
-tokenizers
-torch
-torchvision
-tqdm
 transformers
-typing_extensions
-tzdata
-ultralytics
-ultralytics-thop
 uritemplate
 urllib3
 watchdog
