@@ -12,7 +12,7 @@ import json
 import concurrent.futures
 
 # Timeout for Gemini API call (in seconds)
-GENAI_TIMEOUT = 30
+GENAI_TIMEOUT = 60
 
 # Initialize the Gemini model
 genai.configure(api_key="AIzaSyBt0ZbpPxwS80U1CIXFddoYn2NEJrD4J8k")
@@ -131,8 +131,26 @@ def process_image(image_path):
     extracted_sentence = read_text_from_file(txt_file_path).replace('\n', ' ')
 
     # Get the corrected sentence from Gemini
-    response = model.generate_content("correct the given sentence, make sure to not increase the number of words too much and just give me the corrected sentence as the response: " + extracted_sentence)
-    corrected_sentence = response.text.strip()
+    # response = model.generate_content("correct the given sentence, make sure to not increase the number of words too much and just give me the corrected sentence as the response: " + extracted_sentence)
+    # corrected_sentence = response.text.strip()
+
+    corrected_sentence = None
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(
+            model.generate_content,
+            f"correct the given sentence, make sure to not increase the number of words too much and just give me the corrected sentence as the response: {extracted_sentence}"
+        )
+        try:
+            response = future.result(timeout=GENAI_TIMEOUT)
+            corrected_sentence = response.text.strip()
+        except concurrent.futures.TimeoutError:
+            result["status"] = "error"
+            result["message"] = "Gemini API call timed out."
+            return result
+        except Exception as e:
+            result["status"] = "error"
+            result["message"] = f"Gemini API call failed with error: {e}"
+            return result
 
     print(f"Extracted Sentence: {extracted_sentence}")
     print(f"Corrected Sentence: {corrected_sentence}")
